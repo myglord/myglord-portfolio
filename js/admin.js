@@ -42,12 +42,15 @@ function logout() {
 $("#loginForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   try {
-    const { token } = await apiCall("/api/admin/login", "POST", { password: $("#loginPassword").value });
+    const { token } = await apiCall("/api/admin/login", "POST", {
+      user: $("#loginUser").value,
+      password: $("#loginPassword").value,
+    });
     TOKEN = token;
     sessionStorage.setItem("mm_admin_token", token);
     showDash();
   } catch {
-    $("#loginStatus").textContent = "WRONG PASSWORD";
+    $("#loginStatus").textContent = "WRONG USER ID OR PASSWORD";
   }
 });
 $("#logoutBtn").addEventListener("click", logout);

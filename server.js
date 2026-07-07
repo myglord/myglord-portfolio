@@ -18,6 +18,7 @@ if (fs.existsSync(envPath)) {
     if (m) ENV[m[1]] = m[2];
   }
 }
+const ADMIN_USER = ENV.ADMIN_USER || "admin";
 const ADMIN_PASSWORD = ENV.ADMIN_PASSWORD || "changeme";
 const CONTACT_TO = ENV.CONTACT_TO || "mussgraph@gmail.com";
 const GMAIL_USER = ENV.GMAIL_USER || "";
@@ -146,9 +147,10 @@ app.post("/api/contact", async (req, res) => {
 
 /* ----- admin API ----- */
 app.post("/api/admin/login", (req, res) => {
-  if ((req.body || {}).password !== ADMIN_PASSWORD) {
-    logActivity("admin_login_failed", {}, req);
-    return res.status(401).json({ error: "wrong password" });
+  const { user, password } = req.body || {};
+  if (String(user || "").trim().toLowerCase() !== ADMIN_USER.toLowerCase() || password !== ADMIN_PASSWORD) {
+    logActivity("admin_login_failed", { user: String(user || "").slice(0, 80) }, req);
+    return res.status(401).json({ error: "wrong user id or password" });
   }
   const token = crypto.randomBytes(24).toString("hex");
   sessions.set(token, Date.now() + 12 * 3600 * 1000);

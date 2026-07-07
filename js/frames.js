@@ -1,0 +1,1 @@
+window.HERO_FRAME_COUNT = 121;

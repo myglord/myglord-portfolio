@@ -1,0 +1,14 @@
+# Static-only Vercel deploy — exclude the Node backend & its files.
+# (Vercel then serves the repo as a pure static site: no build, no server.)
+node_modules
+data
+server.js
+ecosystem.config.js
+package.json
+package-lock.json
+admin.html
+js/admin.js
+css/admin.css
+.env
+.env.example
+DEPLOY-HOSTINGER-VPS.md

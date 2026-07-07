@@ -82,9 +82,16 @@ function initForms() {
       contactStatus.textContent = "MESSAGE SENT — I'LL GET BACK TO YOU SOON";
       contactStatus.className = "form-status ok";
       contactForm.reset();
-    } else {
-      contactStatus.textContent = "COULDN'T SEND — EMAIL ME AT MUSSGRAPH@GMAIL.COM";
+    } else if (res.data && res.data.error) {
+      contactStatus.textContent = res.data.error.toUpperCase();
       contactStatus.className = "form-status err";
+    } else {
+      // No backend (static hosting) — open the visitor's email app instead
+      const subject = encodeURIComponent(`Project enquiry from ${name}`);
+      const body = encodeURIComponent(`${message}\n\n— ${name} (${email})`);
+      window.location.href = `mailto:mussgraph@gmail.com?subject=${subject}&body=${body}`;
+      contactStatus.textContent = "OPENING YOUR EMAIL APP…";
+      contactStatus.className = "form-status ok";
     }
   });
 
@@ -93,14 +100,24 @@ function initForms() {
   subscribeForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const email = document.getElementById("subEmail").value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      subscribeStatus.textContent = "PLEASE ENTER A VALID EMAIL";
+      subscribeStatus.className = "form-status err";
+      return;
+    }
     const res = await api.post("/api/subscribe", { email });
     if (res.ok) {
       subscribeStatus.textContent = "YOU'RE IN — WATCH YOUR INBOX";
       subscribeStatus.className = "form-status ok";
       subscribeForm.reset();
-    } else {
-      subscribeStatus.textContent = "PLEASE ENTER A VALID EMAIL";
+    } else if (res.data && res.data.error) {
+      subscribeStatus.textContent = res.data.error.toUpperCase();
       subscribeStatus.className = "form-status err";
+    } else {
+      // No backend (static hosting) — hand off to email
+      window.location.href = `mailto:mussgraph@gmail.com?subject=${encodeURIComponent("Subscribe me")}&body=${encodeURIComponent(`Please add ${email} to your announcements.`)}`;
+      subscribeStatus.textContent = "OPENING YOUR EMAIL APP TO SUBSCRIBE…";
+      subscribeStatus.className = "form-status ok";
     }
   });
 }

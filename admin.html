@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Myglord Muss</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/admin.css?v=2" />
+</head>
+<body>
+
+  <!-- LOGIN -->
+  <div class="login" id="loginView">
+    <form class="login__box" id="loginForm">
+      <h1 class="login__title">MM<span class="accent">.</span> ADMIN</h1>
+      <input class="input" id="loginPassword" type="password" placeholder="Admin password" autocomplete="current-password" />
+      <button class="btn" type="submit">ENTER</button>
+      <p class="status err" id="loginStatus"></p>
+    </form>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="dash hidden" id="dashView">
+    <header class="dash__header">
+      <span class="dash__logo">MM<span class="accent">.</span> DASHBOARD</span>
+      <nav class="dash__tabs">
+        <button class="tab active" data-tab="overview">OVERVIEW</button>
+        <button class="tab" data-tab="messages">MESSAGES</button>
+        <button class="tab" data-tab="subscribers">SUBSCRIBERS</button>
+        <button class="tab" data-tab="broadcast">BROADCAST</button>
+        <button class="tab" data-tab="content">SITE CONTENT</button>
+      </nav>
+      <button class="btn btn--ghost" id="logoutBtn">LOG OUT</button>
+    </header>
+
+    <main class="dash__main">
+
+      <!-- OVERVIEW -->
+      <section class="panel" id="panel-overview">
+        <div class="cards" id="overviewCards"></div>
+        <h2 class="panel__h">EVENT BREAKDOWN</h2>
+        <div class="cards" id="eventCards"></div>
+        <h2 class="panel__h">RECENT ACTIVITY</h2>
+        <div class="tablewrap">
+          <table class="table" id="activityTable">
+            <thead><tr><th>WHEN</th><th>EVENT</th><th>DETAILS</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- MESSAGES -->
+      <section class="panel hidden" id="panel-messages">
+        <h2 class="panel__h">CONTACT MESSAGES</h2>
+        <div id="messagesList"></div>
+      </section>
+
+      <!-- SUBSCRIBERS -->
+      <section class="panel hidden" id="panel-subscribers">
+        <h2 class="panel__h">SUBSCRIBERS</h2>
+        <div class="tablewrap">
+          <table class="table" id="subsTable">
+            <thead><tr><th>EMAIL</th><th>SUBSCRIBED</th><th></th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- BROADCAST -->
+      <section class="panel hidden" id="panel-broadcast">
+        <h2 class="panel__h">SEND ANNOUNCEMENT TO ALL SUBSCRIBERS</h2>
+        <p class="hint" id="smtpHint"></p>
+        <form class="stack" id="broadcastForm">
+          <input class="input" id="bcSubject" type="text" placeholder="Subject" />
+          <textarea class="input area" id="bcBody" rows="8" placeholder="Write your announcement…"></textarea>
+          <button class="btn" type="submit">SEND TO ALL SUBSCRIBERS</button>
+          <p class="status" id="bcStatus"></p>
+        </form>
+        <h2 class="panel__h">PAST BROADCASTS</h2>
+        <div id="broadcastsList"></div>
+      </section>
+
+      <!-- CONTENT -->
+      <section class="panel hidden" id="panel-content">
+        <h2 class="panel__h">EDIT SITE CONTENT — NO CODE NEEDED</h2>
+        <form class="stack" id="contentForm">
+          <label class="lbl">HERO SUBTITLE</label>
+          <input class="input" id="ctHeroSubtitle" type="text" />
+
+          <label class="lbl">STATS (value / prefix / suffix / decimals / label)</label>
+          <div class="stack" id="ctStats"></div>
+
+          <label class="lbl">THREE PILLARS (title — use ⏎ for line breaks — and description)</label>
+          <div class="stack" id="ctPillars"></div>
+
+          <label class="lbl">PROJECTS (title and one-line pitch)</label>
+          <div class="stack" id="ctProjects"></div>
+
+          <label class="lbl">FINALE SUBLINE</label>
+          <input class="input" id="ctFinaleSub" type="text" />
+
+          <button class="btn" type="submit">SAVE &amp; PUBLISH</button>
+          <p class="status" id="contentStatus"></p>
+        </form>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="js/admin.js?v=2"></script>
+</body>
+</html>

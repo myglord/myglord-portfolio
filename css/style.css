@@ -359,6 +359,80 @@ body {
 }
 .btn--ghost:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-4px); }
 
+/* ============ CONTACT ============ */
+.contact {
+  position: relative;
+  padding: 16vh clamp(24px, 6vw, 90px);
+  background: var(--ink-2);
+  border-top: 1px solid rgba(242,234,217,0.1);
+}
+.contact__inner { max-width: 900px; margin: 0 auto; }
+.contact__heading {
+  font-family: var(--display);
+  font-size: clamp(52px, 9vw, 140px);
+  line-height: 0.92;
+  text-transform: uppercase;
+  margin-bottom: 8vh;
+}
+.contact__form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+}
+.field { display: flex; flex-direction: column; gap: 10px; }
+.field--full { grid-column: 1 / -1; }
+.field__label {
+  font-size: 10px; letter-spacing: 0.35em;
+  color: var(--cream-dim);
+}
+.field__input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(242,234,217,0.25);
+  color: var(--cream);
+  font-family: var(--body);
+  font-size: 17px;
+  font-weight: 300;
+  padding: 12px 2px;
+  outline: none;
+  border-radius: 0;
+  transition: border-color 0.3s ease;
+}
+.field__input:focus { border-bottom-color: var(--accent); }
+.field__input--area { resize: vertical; min-height: 120px; }
+.contact__submit { justify-self: start; border: none; cursor: pointer; }
+.form-status {
+  grid-column: 1 / -1;
+  font-size: 12px; letter-spacing: 0.2em;
+  color: var(--cream-dim);
+  min-height: 18px;
+}
+.form-status.ok { color: #7ddf8a; }
+.form-status.err { color: var(--accent); }
+
+/* ============ SUBSCRIBE ============ */
+.subscribe {
+  padding: 12vh clamp(24px, 6vw, 90px);
+  background: var(--ink);
+  border-top: 1px solid rgba(242,234,217,0.1);
+  text-align: center;
+}
+.subscribe__inner { max-width: 620px; margin: 0 auto; }
+.subscribe__title {
+  font-family: var(--display);
+  font-size: clamp(30px, 4.5vw, 56px);
+  letter-spacing: 0.02em;
+}
+.subscribe__sub {
+  margin: 2vh 0 4vh;
+  font-weight: 300;
+  color: var(--cream-dim);
+}
+.subscribe__form { display: flex; gap: 14px; }
+.subscribe__input { flex: 1; text-align: left; }
+.subscribe__form .btn { border: none; cursor: pointer; }
+.subscribe .form-status { margin-top: 14px; }
+
 /* ============ FOOTER ============ */
 .footer {
   display: flex; justify-content: space-between; align-items: center;
@@ -409,6 +483,10 @@ body {
   .btn { text-align: center; padding: 18px 24px; }
 
   .footer__links { gap: 12px 20px; }
+
+  .contact__form { grid-template-columns: 1fr; }
+  .contact__heading { font-size: clamp(44px, 14vw, 80px); margin-bottom: 5vh; }
+  .subscribe__form { flex-direction: column; }
 }
 
 /* Respect users who prefer less motion */

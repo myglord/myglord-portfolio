@@ -1,1 +1,1 @@
-window.HERO_FRAME_COUNT = 121;
+window.HERO_FRAME_COUNT = 120;

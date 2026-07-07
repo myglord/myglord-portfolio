@@ -2,6 +2,135 @@
 
 gsap.registerPlugin(ScrollTrigger);
 
+/* ---------- API HELPERS (no-op gracefully on static hosting) ---------- */
+const api = {
+  async get(path) {
+    try { const r = await fetch(path); return r.ok ? r.json() : null; } catch { return null; }
+  },
+  async post(path, body) {
+    try {
+      const r = await fetch(path, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      return { ok: r.ok, data: await r.json().catch(() => ({})) };
+    } catch { return { ok: false, data: {} }; }
+  },
+  track(event, meta) {
+    try {
+      navigator.sendBeacon(
+        "/api/track",
+        new Blob([JSON.stringify({ event, meta })], { type: "application/json" })
+      );
+    } catch { /* static hosting — ignore */ }
+  },
+};
+
+/* ---------- CMS CONTENT HYDRATION ---------- */
+async function hydrateContent() {
+  const c = await api.get("/api/content");
+  if (!c) return;
+  const sub = document.getElementById("heroSubtitle");
+  if (c.heroSubtitle) sub.textContent = c.heroSubtitle;
+  const statEls = document.querySelectorAll(".stat");
+  (c.stats || []).forEach((s, i) => {
+    const el = statEls[i];
+    if (!el) return;
+    const num = el.querySelector(".stat__num");
+    num.dataset.count = s.value;
+    num.dataset.decimals = s.decimals || 0;
+    num.dataset.prefix = s.prefix || "";
+    num.dataset.suffix = s.suffix || "";
+    el.querySelector(".stat__label").textContent = s.label;
+  });
+  const pillarEls = document.querySelectorAll(".pillar");
+  (c.pillars || []).forEach((p, i) => {
+    const el = pillarEls[i];
+    if (!el) return;
+    el.querySelector(".pillar__title").innerHTML = p.title.replace(/\n/g, "<br/>");
+    el.querySelector(".pillar__desc").textContent = p.desc;
+  });
+  const cardEls = document.querySelectorAll(".card");
+  (c.projects || []).forEach((p, i) => {
+    const el = cardEls[i];
+    if (!el) return;
+    el.querySelector(".card__title").textContent = p.title;
+    el.querySelector(".card__pitch").textContent = p.pitch;
+  });
+  if (c.finaleSub) document.querySelector(".finale__sub").textContent = c.finaleSub;
+}
+
+/* ---------- FORMS ---------- */
+function initForms() {
+  const contactForm = document.getElementById("contactForm");
+  const contactStatus = document.getElementById("contactStatus");
+  contactForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const name = document.getElementById("cfName").value.trim();
+    const email = document.getElementById("cfEmail").value.trim();
+    const message = document.getElementById("cfMessage").value.trim();
+    if (!name || !email || !message) {
+      contactStatus.textContent = "PLEASE FILL IN ALL FIELDS";
+      contactStatus.className = "form-status err";
+      return;
+    }
+    contactStatus.textContent = "SENDING…";
+    contactStatus.className = "form-status";
+    const res = await api.post("/api/contact", { name, email, message });
+    if (res.ok) {
+      contactStatus.textContent = "MESSAGE SENT — I'LL GET BACK TO YOU SOON";
+      contactStatus.className = "form-status ok";
+      contactForm.reset();
+    } else {
+      contactStatus.textContent = "COULDN'T SEND — EMAIL ME AT MUSSGRAPH@GMAIL.COM";
+      contactStatus.className = "form-status err";
+    }
+  });
+
+  const subscribeForm = document.getElementById("subscribeForm");
+  const subscribeStatus = document.getElementById("subscribeStatus");
+  subscribeForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("subEmail").value.trim();
+    const res = await api.post("/api/subscribe", { email });
+    if (res.ok) {
+      subscribeStatus.textContent = "YOU'RE IN — WATCH YOUR INBOX";
+      subscribeStatus.className = "form-status ok";
+      subscribeForm.reset();
+    } else {
+      subscribeStatus.textContent = "PLEASE ENTER A VALID EMAIL";
+      subscribeStatus.className = "form-status err";
+    }
+  });
+}
+
+/* ---------- ACTIVITY TRACKING ---------- */
+function initTracking() {
+  api.track("pageview", { path: location.pathname, ref: document.referrer || null });
+  const seen = new Set();
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((en) => {
+      if (en.isIntersecting && !seen.has(en.target.id)) {
+        seen.add(en.target.id);
+        api.track("section_view", { section: en.target.id });
+      }
+    });
+  }, { threshold: 0.25 });
+  ["hero", "stats", "pillars", "work", "finale", "contact", "subscribe"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) io.observe(el);
+  });
+  document.querySelectorAll(".card").forEach((card) => {
+    card.addEventListener("click", () =>
+      api.track("project_click", { project: card.querySelector(".card__title").textContent })
+    );
+  });
+  document.querySelectorAll(".finale__actions .btn").forEach((btn) => {
+    btn.addEventListener("click", () => api.track("cta_click", { cta: btn.textContent.trim() }));
+  });
+}
+
 /* ---------- LENIS SMOOTH SCROLL ---------- */
 const lenis = new Lenis({
   duration: 1.15,
@@ -229,4 +358,8 @@ function initSite() {
   ScrollTrigger.refresh();
 }
 
-preloadFrames().then(initSite);
+Promise.all([preloadFrames(), hydrateContent()]).then(() => {
+  initSite();
+  initForms();
+  initTracking();
+});

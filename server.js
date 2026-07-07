@@ -99,6 +99,7 @@ function requireAdmin(req, res, next) {
 
 /* ---------- app ---------- */
 const app = express();
+app.set("trust proxy", 1); // behind nginx/reverse proxy on the VPS
 app.use(express.json({ limit: "200kb" }));
 
 /* ----- public API ----- */
